@@ -1,0 +1,54 @@
+<? $is_fullscreen = Phpr::$session->get('backend_fullscreen_mode'); ?>
+<div id="footer" class="<?= $is_fullscreen ? 'hidden' : null?>">
+	<? $theme = System_ColorThemeParams::get(); ?>
+	
+	<? 
+		$footer_text = $theme->footer_text;
+		$show_footer_text = strlen(trim(strip_tags($footer_text)));
+		
+		if ($show_footer_text):
+	?>
+		<div id="footer_custom_text">
+			<?= $footer_text ?>
+		</div>
+	<? endif ?>
+	
+	<? if ($theme->logo->count && !$theme->hide_footer_logos): ?>
+		<img src="modules/backend/skins/lemons/assets/images/footer_logo.png" alt="<?=  Phpr::$config->get('APP_NAME', 'Website') ?>"/>
+	<? endif ?>
+	
+	<? Backend::$events->fireEvent('backend:onExtendFooter', $this) ?>
+
+	<p class="copyright"><?=  Phpr::$config->get('APP_NAME', 'Website') ?> Copyright &copy; <?= date('Y') ?>. All Rights Reserved.</p>
+	<div class="clear"></div>
+</div>
+
+<?= Phpr_Form::openTag(array('id'=>'backend-footer-form')) ?></form>
+
+<? if (isset($display_intro_tour) && $display_intro_tour): ?>
+	<script src="modules/backend/thirdparty/zurb-joyride/jquery.joyride-2.0.3.js"></script>
+
+	<ol id="backend-tour-list" style="display: none">
+		<li data-button="Next: The Main Menu">
+			<h3>Welcome to <?=  Phpr::$config->get('APP_NAME', 'your website') ?>!</h3>
+			<p>Let's do a quick tour to help get you started.</p>
+		</li>
+		<li data-button="Next: Preview the Store" data-id="menu_trigger"><p>This is the <strong>Main Menu</strong>. Click it to get to other parts of the Administration Area.</p></li>
+		<li data-button="Next: Settings Menu" data-options="tipLocation:left" data-id="view_store_link"><p>Click the <strong>View Store</strong> link to preview your store in a new browser tab.</p></li>
+		<li data-button="Got it!" data-options="tipLocation:left" data-id="settings_link"><p>The <strong>Settings Menu</strong> gives you access to the Personal Settings, System Settings and Logout features.</p></li>
+	</ol>
+
+	<script>
+		jQuery(window).load(function() {
+			start_backend_tour();
+			
+			jQuery("#backend-tour-list").joyride({
+				autoStart: true,
+				modal: true,
+				postRideCallback: function() {
+					finish_backend_tour('backend-intro');
+				}
+			});
+		});
+	</script>
+<? endif ?>
